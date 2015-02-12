@@ -1,0 +1,13 @@
+{% load staticfiles %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'scripts/style.css' %}" />
+
+{% if latest_script_list %}
+  <ul>
+    {% for script in latest_script_list %}
+      <li><a href="{% url 'scripts:detail' script.id %}">{{ script.code }}</a></li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>No scripts are available.</p>
+{% endif %}
