@@ -5,7 +5,7 @@
 {% if latest_script_list %}
   <ul>
     {% for script in latest_script_list %}
-      <li><a href="{% url 'scripts:detail' script.id %}">{{ script.code }}</a></li>
+      <li><a href="{% url 'scripts:detail' script.id %}">{{ script.title }}</a></li>
     {% endfor %}
   </ul>
 {% else %}
