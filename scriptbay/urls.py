@@ -1,10 +1,9 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 
-urlpatterns = patterns('',
-    # Examples:
-    # url(r'^$', 'scriptbay.views.home', name='home'),
-    # url(r'^blog/', include('blog.urls')),
 
+urlpatterns = patterns('',
+    url(r'^scripts/', include('scripts.urls', namespace = 'scripts')),
     url(r'^admin/', include(admin.site.urls)),
+    # url(r'^admin/', include(admin.site.urls)),
 )
