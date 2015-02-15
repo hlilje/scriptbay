@@ -8,6 +8,9 @@ class Script(models.Model):
     pub_date = models.DateTimeField('date published')
     changed_date = models.DateTimeField('date changed')
     #rating = models.FloatField(default=0)
+    
+    def __str__(self): return self.title
+
 
 class Review(models.Model):
     script = models.ForeignKey(Script)

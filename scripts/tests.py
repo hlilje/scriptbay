@@ -34,6 +34,53 @@ class ScriptViewTests(TestCase):
         self.assertContains(response, "No scripts are available.")
         self.assertQuerysetEqual(response.context['latest_script_list'], [])
 
+    def test_index_view_with_a_past_script(self):
+        """
+        Scripts with a pub_date in the past should be displayed on the
+        index page.
+        """
+        create_script(title="Past script.", pub_days=-30, changed_days=-30)
+        response = self.client.get(reverse('scripts:index'))
+        self.assertQuerysetEqual(
+            response.context['latest_script_list'],
+            ['<Script: Past script.>']
+        )
+
+    def test_index_view_with_a_future_script(self):
+        """
+        Scripts with a pub_date in the future should not be displayed on
+        the index page.
+        """
+        create_script(title="Future script.", pub_days=30, changed_days=30)
+        response = self.client.get(reverse('scripts:index'))
+        self.assertContains(response, "No scripts are available.", status_code=200)
+        self.assertQuerysetEqual(response.context['latest_script_list'], [])
+
+    def test_index_view_with_future_script_and_past_script(self):
+        """
+        Even if both past and future scripts exist, only past scripts
+        should be displayed.
+        """
+        create_script(title="Past script.", pub_days=-30, changed_days=-30)
+        create_script(title="Future script.", pub_days=30, changed_days=30)
+        response = self.client.get(reverse('scripts:index'))
+        self.assertQuerysetEqual(
+            response.context['latest_script_list'],
+            ['<Script: Past script.>']
+        )
+
+    def test_index_view_with_two_past_scripts(self):
+        """
+        The scripts index page may display multiple scripts.
+        """
+        create_script(title="Past script 1.", pub_days=-30, changed_days=-30)
+        create_script(title="Past script 2.", pub_days=-5, changed_days=-5)
+        response = self.client.get(reverse('scripts:index'))
+        self.assertQuerysetEqual(
+            response.context['latest_script_list'],
+            ['<Script: Past script 2.>', '<Script: Past script 1.>']
+        )
+
 
 class ScriptIndexDetailTests(TestCase):
     def test_detail_view_with_a_future_script(self):
