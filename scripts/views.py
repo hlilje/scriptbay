@@ -1,6 +1,6 @@
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import render
 from django.utils import timezone
 from django.views import generic
 from django.views.generic.edit import FormView
@@ -23,22 +23,19 @@ class IndexView(generic.ListView):
         ).order_by('-pub_date')[:5]
 
 
-# class DetailView(generic.DetailView):
 class DetailView(FormView):
     model = Script
     template_name = 'scripts/detail.html'
     form_class = ReviewForm
     # success_url = '/thanks/'
 
-    # Override get to be able to pass the script id to be used in the form
+    # Override GET to be able to pass the script ID to be used in the form
     def get(self, request, *args, **kwargs):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
 
         context_data = self.get_context_data(form=form)
-        # context_data['script_id'] = kwargs['pk']
         context_data['script'] = Script.objects.filter(id=kwargs['pk'])[0]
-        print(context_data)
         return self.render_to_response(context_data)
 
     def form_valid(self, form):

@@ -4,6 +4,5 @@ from scripts.models import Review
 
 
 class ReviewForm(forms.Form):
-    # rating = forms.ChoiceField(queryset=Review.RATING_CHOICES)
-    rating = forms.ChoiceField()
+    rating = forms.ChoiceField(choices=Review.RATING_CHOICES)
     comment = forms.CharField()
