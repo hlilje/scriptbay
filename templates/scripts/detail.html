@@ -3,6 +3,8 @@
 
 {% if error_message %}
 <p><strong>{{ error_message }}</strong></p>
+{% elif message %}
+<p>{{ message }}</p>
 {% else %}
 <form action="{% url 'scripts:write_review' script.id %}" method="post">
   {% csrf_token %}
