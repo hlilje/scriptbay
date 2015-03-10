@@ -27,7 +27,6 @@ class DetailView(FormView):
     model = Script
     template_name = 'scripts/detail.html'
     form_class = ReviewForm
-    # success_url = '/thanks/' # TODO
 
     # Override GET to be able to pass the script ID to be used in the form
     def get(self, request, *args, **kwargs):
@@ -41,11 +40,12 @@ class DetailView(FormView):
 
 def write_review(request, script_id):
     script = get_object_or_404(Script, pk=script_id)
-    form = ReviewForm(request.POST) # TODO Remove?
+    form = ReviewForm(request.POST)
     if form.is_valid():
-        print(form.cleaned_data) # TODO
-        print(script_id)
-        # TODO Save the review
+        data = form.cleaned_data
+        review = Review(script=script, comment_text=data['comment'],
+                rating=data['rating']);
+        review.save()
         return render(request, 'scripts/detail.html', {'form': form,
             'script': script,
             'message': "Thanks for your review!"})
