@@ -6,9 +6,22 @@
 {% elif message %}
 <p>{{ message }}</p>
 {% else %}
+<p>
 <form action="{% url 'scripts:write_review' script.id %}" method="post">
   {% csrf_token %}
   {{ form }}
   <input type="submit" value="Review" />
 </form>
+</p>
+{% endif %}
+{% if review_list %}
+  <ul>
+    {% for review in review_list %}
+      <p>
+      Rating: {{ review.rating }}
+      <br>
+      Comment: {{ review.comment_text }}
+      </p>
+    {% endfor %}
+  </ul>
 {% endif %}

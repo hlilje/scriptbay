@@ -28,13 +28,17 @@ class DetailView(FormView):
     template_name = 'scripts/detail.html'
     form_class = ReviewForm
 
-    # Override GET to be able to pass the script ID to be used in the form
+    # Override GET to be able to pass the data needed in the form
     def get(self, request, *args, **kwargs):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
+        script_id = kwargs['pk'][0]
+        script = Script.objects.filter(id=kwargs['pk'])[0]
+        review_list = Review.objects.filter(script=script)
 
         context_data = self.get_context_data(form=form)
-        context_data['script'] = Script.objects.filter(id=kwargs['pk'])[0]
+        context_data['script'] = script
+        context_data['review_list'] = review_list
         return self.render_to_response(context_data)
 
 
