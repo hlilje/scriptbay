@@ -1,5 +1,5 @@
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseNotFound
 from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 from django.views import generic
@@ -32,8 +32,14 @@ class DetailView(FormView):
     def get(self, request, *args, **kwargs):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
+        # script_id = kwargs['pk'][0]
         script_id = kwargs['pk'][0]
-        script = Script.objects.filter(id=kwargs['pk'])[0]
+
+        script = Script.objects.filter(id=kwargs['pk'], pub_date__lte=timezone.now())
+        if len(script) > 0:
+            script = script[0]
+        else:
+            return HttpResponseNotFound('<h1>Page not found</h1>')
         review_list = Review.objects.filter(script=script)
 
         context_data = self.get_context_data(form=form)
