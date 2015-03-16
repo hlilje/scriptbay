@@ -4,6 +4,7 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.utils import timezone
 
+from scripts.forms import ReviewForm
 from scripts.models import Script
 
 
@@ -17,11 +18,6 @@ def create_script(title="", description="", code="", pub_days=0, changed_days=0)
     changed_time = timezone.now() + datetime.timedelta(days=changed_days)
     return Script.objects.create(title=title, description=description,
             code=code, pub_date=pub_time, changed_date=changed_time)
-
-
-class ScriptMethodTests(TestCase):
-    # TODO
-    pass
 
 
 class ScriptViewTests(TestCase):
@@ -104,3 +100,16 @@ class ScriptIndexDetailTests(TestCase):
         response = self.client.get(reverse('scripts:detail',
                 args=(past_script.id,)))
         self.assertContains(response, past_script.title, status_code=200)
+
+
+class SriptFormTests(TestCase):
+    def test_form_creation(self):
+        """
+        The initialised form should be valid and contain the given data.
+        """
+        form_data = {'rating': '1', 'comment': 'Nice.'}
+        form = ReviewForm(data=form_data)
+        self.assertEqual(form.is_valid(), True)
+        data = form.cleaned_data
+        self.assertEqual(data['rating'], '1')
+        self.assertEqual(data['comment'], 'Nice.')
