@@ -32,9 +32,7 @@ class DetailView(FormView):
     def get(self, request, *args, **kwargs):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
-        # script_id = kwargs['pk'][0]
         script_id = kwargs['pk'][0]
-
         script = Script.objects.filter(id=kwargs['pk'], pub_date__lte=timezone.now())
         if len(script) > 0:
             script = script[0]
