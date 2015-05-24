@@ -4,9 +4,9 @@ from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 from django.views import generic
 from django.views.generic.edit import FormView
-
 from scripts.forms import ReviewForm
 from scripts.models import Script, Review
+import memcache
 
 
 class IndexView(generic.ListView):
@@ -33,11 +33,19 @@ class DetailView(FormView):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
         script_id = kwargs['pk'][0]
-        script = Script.objects.filter(id=kwargs['pk'], pub_date__lte=timezone.now())
-        if len(script) > 0:
-            script = script[0]
-        else:
-            return HttpResponseNotFound('<h1>Page not found</h1>')
+
+        # Connect to memcache client
+        mc = memcache.Client(['127.0.0.1:11211'], debug=0)
+
+        script = mc.get(script_id) # First try to extract script from cache
+        if not script:
+            script = Script.objects.filter(id=kwargs['pk'], pub_date__lte=timezone.now())
+            if len(script) > 0:
+                script = script[0]
+                mc.set(script_id, script) # Store script in cache
+            else:
+                return HttpResponseNotFound('<h1>Page not found</h1>')
+
         review_list = Review.objects.filter(script=script)
 
         context_data = self.get_context_data(form=form)
